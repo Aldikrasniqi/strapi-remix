@@ -1,4 +1,4 @@
-import type { LinksFunction } from "@remix-run/node";
+import type { LinksFunction } from '@remix-run/node';
 import {
   Form,
   Links,
@@ -7,18 +7,29 @@ import {
   Scripts,
   ScrollRestoration,
   Outlet,
-} from "@remix-run/react";
+  useLoaderData,
+  Link,
+  json
+} from '@remix-run/react';
+import { getContacts } from './data';
+import appStyles from './app.css';
 
-import appStyles from "./app.css";
-
-export const links: LinksFunction = () => 
-  [{
-    rel: "stylesheet",
+export const links: LinksFunction = () => [
+  {
+    rel: 'stylesheet',
     href: appStyles,
-  }]
+  },
+];
 
+export async function loader() {
+  const contacts = await getContacts();
+  return json(contacts);
+}
 
 export default function App() {
+  const data = useLoaderData<typeof loader>();
+  console.log(data)
+
   return (
     <html lang="en">
       <head>
@@ -46,14 +57,30 @@ export default function App() {
             </Form>
           </div>
           <nav>
-            <ul>
-              <li>
-                <a href={`/contacts/1`}>Your Name</a>
-              </li>
-              <li>
-                <a href={`/contacts/2`}>Your Friend</a>
-              </li>
-            </ul>
+            {data.length ? (
+              <ul>
+                {data.map((contact) => (
+                  <li key={contact.id}>
+                    <Link to={`contacts/${contact.id}`}>
+                      {contact.first || contact.last ? (
+                        <>
+                          {contact.first} {contact.last}
+                        </>
+                      ) : (
+                        <i>No Name</i>
+                      )}{" "}
+                      {contact.favorite ? (
+                        <span>★</span>
+                      ) : null}
+                    </Link>
+                  </li>
+                ))}
+              </ul>
+            ) : (
+              <p>
+                <i>No contacts</i>
+              </p>
+            )}
           </nav>
         </div>
         <div id="detail">
