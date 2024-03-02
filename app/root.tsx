@@ -11,8 +11,9 @@ import {
   Link,
   json
 } from '@remix-run/react';
-import { getContacts } from './data';
+import { getContacts } from './data.server';
 import appStyles from './app.css';
+
 
 export const links: LinksFunction = () => [
   {
@@ -59,7 +60,7 @@ export default function App() {
           <nav>
             {data.length ? (
               <ul>
-                {data.map((contact) => (
+                {data.map((contact: ContactMutation) => (
                   <li key={contact.id}>
                     <Link to={`contacts/${contact.id}`}>
                       {contact.first || contact.last ? (
