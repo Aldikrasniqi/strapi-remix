@@ -10,7 +10,6 @@ export async function loader({params} : LoaderFunctionArgs) {
   const contactID = params.contactID;
   invariant(contactID, "No contact ID provided");
   const contact = await getContact(contactID);
-  if(!contact) throw new Response("Contact not found", {status: 404});
   return json(contact);
 }
 
@@ -58,7 +57,7 @@ export default function Contact() {
           </Form>
 
           <Form
-            action="destroy"
+            action="delete"
             method="post"
             onSubmit={(event) => {
               const response = confirm(
